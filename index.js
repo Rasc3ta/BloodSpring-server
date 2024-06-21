@@ -3,6 +3,7 @@ const cors = require("cors");
 require("dotenv").config();
 const app = express();
 const port = process.env.PORT || 5000;
+const jwt = require("jsonwebtoken");
 
 app.use(
   cors({
@@ -37,9 +38,16 @@ async function run() {
     //   "Pinged your deployment. You successfully connected to MongoDB!"
     // );
 
+    // jwt related apis
+    app.post("/jwt", (req, res) => {
+      const user = req.body;
+      const token = jwt.sign(user, process.env.JWT_SECRET, {
+        expiresIn: "1h",
+      });
+      res.send({ token });
+    });
 
     // authentication related apis
-    
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
