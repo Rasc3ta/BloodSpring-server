@@ -28,6 +28,11 @@ const client = new MongoClient(uri, {
   },
 });
 
+// database setup:
+const BloodSpringDB = client.db("BloodSpringDB");
+
+const userCollection = BloodSpringDB.collection("userCollection");
+
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
@@ -47,7 +52,47 @@ async function run() {
       res.send({ token });
     });
 
+    // verify jwt:
+
+    const verify = (req, res, next) => {
+      const token = req.headers.authorization.split(" ")[1];
+      const email = req.query.email;
+
+      if (token) {
+        jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+          if (!err) {
+            if (decoded.email === email) {
+              req.decoded = decoded;
+              next();
+            } else {
+              res.status(403).send("Forbidden");
+            }
+          } else {
+            res.status(401).send("Unauthorized");
+          }
+        });
+      } else {
+        res.status(401).send("Unauthorized");
+      }
+    };
+
     // authentication related apis
+
+    app.post("/addUser", async (req, res) => {
+      const user = req.body;
+      const result = await userCollection.insertOne(user);
+      res.send(result);
+    });
+
+    // getting current user data from database :
+    app.get("/getCurrentUser", verify, async (req, res) => {
+      const query = {
+        email: req.query.email,
+      };
+
+      const result = await userCollection.findOne(query);
+      res.send(result);
+    });
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
