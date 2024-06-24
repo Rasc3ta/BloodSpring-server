@@ -58,6 +58,8 @@ async function run() {
       const token = req.headers.authorization.split(" ")[1];
       const email = req.query.email;
 
+      // console.log("token before verification : ", token);
+
       if (token) {
         jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
           if (!err) {
@@ -65,13 +67,17 @@ async function run() {
               req.decoded = decoded;
               next();
             } else {
+              console.log("emails don't match thus forbidden");
+              console.log(err);
               res.status(403).send("Forbidden");
             }
           } else {
+            console.log("faced error when verifying token, token: ", token);
             res.status(401).send("Unauthorized");
           }
         });
       } else {
+        console.log("didnt get a token ");
         res.status(401).send("Unauthorized");
       }
     };
