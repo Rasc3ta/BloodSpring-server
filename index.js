@@ -28,11 +28,6 @@ const client = new MongoClient(uri, {
   },
 });
 
-// database setup:
-const BloodSpringDB = client.db("BloodSpringDB");
-
-const userCollection = BloodSpringDB.collection("userCollection");
-
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
@@ -42,6 +37,10 @@ async function run() {
     // console.log(
     //   "Pinged your deployment. You successfully connected to MongoDB!"
     // );
+
+    // database setup:
+    const BloodSpringDB = client.db("BloodSpringDB");
+    const userCollection = BloodSpringDB.collection("userCollection");
 
     // jwt related apis
     app.post("/jwt", (req, res) => {
@@ -57,8 +56,8 @@ async function run() {
     const verify = (req, res, next) => {
       const token = req.headers.authorization.split(" ")[1];
       const email = req.query.email;
-
       // console.log("token before verification : ", token);
+      // console.log(req.headers);
 
       if (token) {
         jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
@@ -68,6 +67,7 @@ async function run() {
               next();
             } else {
               console.log("emails don't match thus forbidden");
+              console.log("email: ", email);
               console.log(err);
               res.status(403).send("Forbidden");
             }
@@ -98,6 +98,29 @@ async function run() {
 
       const result = await userCollection.findOne(query);
       res.send(result);
+    });
+
+    // profile update related apis:
+
+    app.patch("/updateUserProfile", verify, async (req, res) => {
+      const patchData = req.body;
+      const email = req.query.email;
+
+      const filter = {
+        email,
+      };
+
+      const updateDoc = {
+        $set: patchData,
+      };
+
+      const options = { upsert: false };
+
+      const result = await userCollection.updateOne(filter, updateDoc, options);
+
+      res.send(result);
+      // console.log("email = ", email);
+      // console.log("patchData = ", patchData);
     });
   } finally {
     // Ensures that the client will close when you finish/error
