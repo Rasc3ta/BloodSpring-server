@@ -28,6 +28,13 @@ const client = new MongoClient(uri, {
   },
 });
 
+
+// database setup:
+const BloodSpringDB = client.db("BloodSpringDB");
+const userCollection = BloodSpringDB.collection("userCollection");
+const reqCollection = BloodSpringDB.collection("reqCollection");
+
+
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
@@ -38,9 +45,6 @@ async function run() {
     //   "Pinged your deployment. You successfully connected to MongoDB!"
     // );
 
-    // database setup:
-    const BloodSpringDB = client.db("BloodSpringDB");
-    const userCollection = BloodSpringDB.collection("userCollection");
 
     // jwt related apis
     app.post("/jwt", (req, res) => {
@@ -121,6 +125,17 @@ async function run() {
       res.send(result);
       // console.log("email = ", email);
       // console.log("patchData = ", patchData);
+    });
+
+    // create donation requests related apis:
+
+    app.post("/createDonationRequest", verify, async (req, res) => {
+      const formData = req.body.formData;
+      // console.log(formData);
+
+      const result = await reqCollection.insertOne(formData);
+      console.log(result);
+      res.send(result);
     });
   } finally {
     // Ensures that the client will close when you finish/error
