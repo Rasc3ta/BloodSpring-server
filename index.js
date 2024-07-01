@@ -104,7 +104,7 @@ async function run() {
       res.send(result);
     });
 
-    // profile update related apis:
+    // profile update related apis :
 
     app.patch("/updateUserProfile", verify, async (req, res) => {
       const patchData = req.body;
