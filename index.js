@@ -16,7 +16,7 @@ app.use(express.json());
 const USER = process.env.DB_USER;
 const PASS = process.env.DB_PASS;
 
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, Timestamp } = require("mongodb");
 const uri = `mongodb+srv://${USER}:${PASS}@cluster0.yhebin7.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -28,12 +28,10 @@ const client = new MongoClient(uri, {
   },
 });
 
-
 // database setup:
 const BloodSpringDB = client.db("BloodSpringDB");
 const userCollection = BloodSpringDB.collection("userCollection");
 const reqCollection = BloodSpringDB.collection("reqCollection");
-
 
 async function run() {
   try {
@@ -44,7 +42,6 @@ async function run() {
     // console.log(
     //   "Pinged your deployment. You successfully connected to MongoDB!"
     // );
-
 
     // jwt related apis
     app.post("/jwt", (req, res) => {
@@ -58,7 +55,7 @@ async function run() {
     // verify jwt:
 
     const verify = (req, res, next) => {
-      const token = req.headers.authorization.split(" ")[1];
+      const token = req.headers.authorization?.split(" ")[1];
       const email = req.query.email;
       // console.log("token before verification : ", token);
       // console.log(req.headers);
@@ -127,15 +124,40 @@ async function run() {
       // console.log("patchData = ", patchData);
     });
 
+
+    // dashboard home related apis:
+
+    app.get("/getLatestThree", verify, async (req, res) => {
+      // console.log("got request")
+      const query = { email: req.query.email };
+      const limit = 3;
+      const sort = { timestamp: -1 };
+
+      const cursor = await reqCollection
+        .find(query)
+        .sort(sort)
+        .limit(limit)
+        .toArray();
+
+      res.send(cursor);
+    });
+
     // create donation requests related apis:
 
     app.post("/createDonationRequest", verify, async (req, res) => {
       const formData = req.body.formData;
+      console.log(req);
       // console.log(formData);
 
       const result = await reqCollection.insertOne(formData);
       console.log(result);
       res.send(result);
+    });
+
+    // My Donation Requests page related apis :
+
+    app.get("/myDonationRequests", verify, async (req, res) => {
+      const query = { email: req.query.email };
     });
   } finally {
     // Ensures that the client will close when you finish/error
