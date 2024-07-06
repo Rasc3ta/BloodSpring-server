@@ -124,7 +124,6 @@ async function run() {
       // console.log("patchData = ", patchData);
     });
 
-
     // dashboard home related apis:
 
     app.get("/getLatestThree", verify, async (req, res) => {
@@ -158,6 +157,20 @@ async function run() {
 
     app.get("/myDonationRequests", verify, async (req, res) => {
       const query = { email: req.query.email };
+      const options = { sort: { timestamp: -1 } };
+
+      const cursor = await reqCollection.find(query, options).toArray();
+
+      res.send(cursor);
+    });
+
+    // get a single donation request data :
+
+    app.get("/requests/:id",verify, (req, res) => {
+      const id = req.params.id;
+
+      // console.log("id : ", req.headers);
+      res.send("backend received get request ")
     });
   } finally {
     // Ensures that the client will close when you finish/error
