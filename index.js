@@ -16,7 +16,12 @@ app.use(express.json());
 const USER = process.env.DB_USER;
 const PASS = process.env.DB_PASS;
 
-const { MongoClient, ServerApiVersion, Timestamp } = require("mongodb");
+const {
+  MongoClient,
+  ServerApiVersion,
+  Timestamp,
+  ObjectId,
+} = require("mongodb");
 const uri = `mongodb+srv://${USER}:${PASS}@cluster0.yhebin7.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -166,11 +171,16 @@ async function run() {
 
     // get a single donation request data :
 
-    app.get("/requests/:id",verify, (req, res) => {
+    app.get("/requests/:id", verify,async (req, res) => {
       const id = req.params.id;
+      console.log(id);
+      const query = {
+        _id: new ObjectId(id),
+      };
 
-      // console.log("id : ", req.headers);
-      res.send("backend received get request ")
+      const result = await reqCollection.findOne(query);
+      console.log(result)
+      res.send(result);
     });
   } finally {
     // Ensures that the client will close when you finish/error
