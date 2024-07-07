@@ -150,11 +150,11 @@ async function run() {
 
     app.post("/createDonationRequest", verify, async (req, res) => {
       const formData = req.body.formData;
-      console.log(req);
+      // console.log(req);
       // console.log(formData);
 
       const result = await reqCollection.insertOne(formData);
-      console.log(result);
+      // console.log(result);
       res.send(result);
     });
 
@@ -171,15 +171,30 @@ async function run() {
 
     // get a single donation request data :
 
-    app.get("/requests/:id", verify,async (req, res) => {
+    app.get("/requests/:id", verify, async (req, res) => {
       const id = req.params.id;
-      console.log(id);
+      // console.log(id);
+
       const query = {
         _id: new ObjectId(id),
       };
-
       const result = await reqCollection.findOne(query);
-      console.log(result)
+      // console.log(result)
+      res.send(result);
+    });
+
+    // edit donation request api:
+    app.patch(`/update/:id`, verify, async (req, res) => {
+
+      const query = { _id: new ObjectId(req.params.id) };
+      const options = { upsert: false };
+      const updateDoc = {
+        $set: {
+          ...req.body.form,
+        },
+      };
+
+      const result = await reqCollection.updateOne(query, updateDoc, options);
       res.send(result);
     });
   } finally {
