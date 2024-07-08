@@ -185,7 +185,6 @@ async function run() {
 
     // edit donation request api:
     app.patch(`/update/:id`, verify, async (req, res) => {
-
       const query = { _id: new ObjectId(req.params.id) };
       const options = { upsert: false };
       const updateDoc = {
@@ -196,6 +195,19 @@ async function run() {
 
       const result = await reqCollection.updateOne(query, updateDoc, options);
       res.send(result);
+    });
+
+    
+    // delete donation request api
+    app.delete(`/deleteRequest/:id`, async (req, res) => {
+
+      const query = { _id: new ObjectId(req.params.id) };
+
+      const  result = await reqCollection.deleteOne(query);
+
+      res.send(result);
+      
+      // console.log("delete : ", id);
     });
   } finally {
     // Ensures that the client will close when you finish/error
