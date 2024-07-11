@@ -197,18 +197,30 @@ async function run() {
       res.send(result);
     });
 
-    
     // delete donation request api
     app.delete(`/deleteRequest/:id`, async (req, res) => {
-
       const query = { _id: new ObjectId(req.params.id) };
 
-      const  result = await reqCollection.deleteOne(query);
+      const result = await reqCollection.deleteOne(query);
 
       res.send(result);
-      
+
       // console.log("delete : ", id);
     });
+
+    app.get("/userCount", async (req, res) => {
+      const result = await userCollection.estimatedDocumentCount({});
+      res.send(`${result}`);
+    });
+    
+    app.get("/requestCount", async (req, res)=>{
+      
+      const result = await reqCollection.estimatedDocumentCount({});
+      res.send(`${result}`);
+
+      
+    })
+    
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
