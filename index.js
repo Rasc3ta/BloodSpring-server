@@ -62,6 +62,7 @@ async function run() {
     const verify = (req, res, next) => {
       const token = req.headers.authorization?.split(" ")[1];
       const email = req.query.email;
+      // console.log("email : ", email);
       // console.log("token before verification : ", token);
       // console.log(req.headers);
 
@@ -74,6 +75,8 @@ async function run() {
             } else {
               console.log("emails don't match thus forbidden");
               console.log("email: ", email);
+              console.log("decoded email: ", decoded.email);
+
               console.log(err);
               res.status(403).send("Forbidden");
             }
@@ -208,19 +211,27 @@ async function run() {
       // console.log("delete : ", id);
     });
 
+    // get user count and donation request count
+
     app.get("/userCount", async (req, res) => {
       const result = await userCollection.estimatedDocumentCount({});
       res.send(`${result}`);
     });
-    
-    app.get("/requestCount", async (req, res)=>{
-      
+
+    app.get("/requestCount", async (req, res) => {
       const result = await reqCollection.estimatedDocumentCount({});
       res.send(`${result}`);
+    });
 
-      
-    })
-    
+    // get all user data
+    app.get(`/getAllUsers`, verify, async (req, res) => {
+      const query = {
+        email: { $ne: req.query.email },
+      };
+
+      const result = await userCollection.find(query).toArray();
+      res.send(result);
+    });
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
