@@ -232,6 +232,96 @@ async function run() {
       const result = await userCollection.find(query).toArray();
       res.send(result);
     });
+
+    // get a user's data
+
+    app.get(`/getUser/:rowId`, verify, async (req, res) => {
+      const rowId = req.params.rowId;
+
+      const result = await userCollection.findOne({ _id: new ObjectId(rowId) });
+
+      res.send(result);
+    });
+
+    app.patch(`/blockUser/:rowId`, verify, async (req, res) => {
+      const rowId = req.params.rowId;
+
+      const filter = {
+        _id: new ObjectId(rowId),
+      };
+
+      const options = { upsert: false };
+
+      const updateDoc = {
+        $set: {
+          isActive: false,
+        },
+      };
+
+      const result = await userCollection.updateOne(filter, updateDoc, options);
+
+      res.send(result);
+    });
+
+    app.patch(`/unblockUser/:rowId`, verify, async (req, res) => {
+      const rowId = req.params.rowId;
+
+      const filter = {
+        _id: new ObjectId(rowId),
+      };
+
+      const options = { upsert: false };
+
+      const updateDoc = {
+        $set: {
+          isActive: true,
+        },
+      };
+
+      const result = await userCollection.updateOne(filter, updateDoc, options);
+
+      res.send(result);
+    });
+
+    app.patch(`/makeAdmin/:rowId`, verify, async (req, res) => {
+      const rowId = req.params.rowId;
+
+      const filter = {
+        _id: new ObjectId(rowId),
+      };
+
+      const options = { upsert: false };
+
+      const updateDoc = {
+        $set: {
+          role: "admin",
+        },
+      };
+
+      const result = await userCollection.updateOne(filter, updateDoc, options);
+
+      res.send(result);
+    });
+
+    app.patch(`/makeVolunteer/:rowId`, verify, async (req, res) => {
+      const rowId = req.params.rowId;
+
+      const filter = {
+        _id: new ObjectId(rowId),
+      };
+
+      const options = { upsert: false };
+
+      const updateDoc = {
+        $set: {
+          role: "volunteer",
+        },
+      };
+
+      const result = await userCollection.updateOne(filter, updateDoc, options);
+
+      res.send(result);
+    });
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
