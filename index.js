@@ -77,7 +77,7 @@ async function run() {
               console.log("email: ", email);
               console.log("decoded email: ", decoded.email);
 
-              console.log(err);
+              console.log("error : ", err);
               res.status(403).send("Forbidden");
             }
           } else {
@@ -225,12 +225,18 @@ async function run() {
 
     // get all user data
     app.get(`/getAllUsers`, verify, async (req, res) => {
-      const query = {
-        email: { $ne: req.query.email },
-      };
+      // console.log(req.query);
 
-      const result = await userCollection.find(query).toArray();
-      res.send(result);
+      if (req.query.role === "donor") {
+        res.status(403).send("forbidden");
+      } else {
+        const query = {
+          email: { $ne: req.query.email },
+        };
+
+        const result = await userCollection.find(query).toArray();
+        res.send(result);
+      }
     });
 
     // get a user's data
