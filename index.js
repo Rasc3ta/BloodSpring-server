@@ -69,6 +69,7 @@ async function run() {
       if (token) {
         jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
           if (!err) {
+            console.log("decoded : ", decoded);
             if (decoded.email === email) {
               req.decoded = decoded;
               next();
@@ -326,6 +327,13 @@ async function run() {
 
       const result = await userCollection.updateOne(filter, updateDoc, options);
 
+      res.send(result);
+    });
+
+    // all donation request api
+
+    app.get(`/allDonationRequest`, verify, async (req, res) => {
+      const result = await reqCollection.find().toArray();
       res.send(result);
     });
   } finally {
