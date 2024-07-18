@@ -37,6 +37,7 @@ const client = new MongoClient(uri, {
 const BloodSpringDB = client.db("BloodSpringDB");
 const userCollection = BloodSpringDB.collection("userCollection");
 const reqCollection = BloodSpringDB.collection("reqCollection");
+const blogCollection = BloodSpringDB.collection("blogCollection");
 
 async function run() {
   try {
@@ -334,6 +335,44 @@ async function run() {
 
     app.get(`/allDonationRequest`, verify, async (req, res) => {
       const result = await reqCollection.find().toArray();
+      res.send(result);
+    });
+
+    // add blog to the database
+
+    app.post("/addBlog", verify, async (req, res) => {
+      const result = await blogCollection.insertOne(req.body.blog);
+      res.send(result);
+    });
+
+    // get all the blogs
+
+    app.get(`/getBlogs`, verify, async (req, res) => {
+      const result = await blogCollection.find().toArray();
+      res.send(result);
+    });
+
+    // publish blog:
+
+    app.patch(`/publishBlog/:id`, verify, async (req, res) => {
+      const filter = { _id: new ObjectId(req.params.id) };
+      const options = { upsert: false };
+      const updateDoc = { $set: { status: "published" } };
+      const result = await blogCollection.updateOne(filter, updateDoc, options);
+      res.send(result);
+    });
+
+    app.patch(`/unpublishBlog/:id`, verify, async (req, res) => {
+      const filter = { _id: new ObjectId(req.params.id) };
+      const options = { upsert: false };
+      const updateDoc = { $set: { status: "draft" } };
+      const result = await blogCollection.updateOne(filter, updateDoc, options);
+      res.send(result);
+    });
+
+    app.delete(`/deleteBlog/:id`, verify, async (req, res) => {
+      const query = { _id: new ObjectId(req.params.id) };
+      const result = await blogCollection.deleteOne(query);
       res.send(result);
     });
   } finally {
