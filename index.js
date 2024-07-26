@@ -375,6 +375,30 @@ async function run() {
       const result = await blogCollection.deleteOne(query);
       res.send(result);
     });
+
+    // update donation status:
+
+    app.patch(`/updateReqStatus`, verify, async (req, res) => {
+      if (req.query.role === "donor") {
+        res.status(403).send("forbidden");
+      }
+
+      const options = { upsert: false };
+      const filter = { _id: new ObjectId(req.body.id) };
+      const updateDoc = {
+        $set: {
+          status: req.body.status,
+          // bloodGroup: "b+",
+        },
+      };
+
+      console.log(req.body.status);
+
+      // const result = await reqCollection.findOne(filter);
+      const result = await reqCollection.updateOne(filter, updateDoc, options);
+
+      res.send(result);
+    });
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
