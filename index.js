@@ -388,11 +388,8 @@ async function run() {
       const updateDoc = {
         $set: {
           status: req.body.status,
-          // bloodGroup: "b+",
         },
       };
-
-      console.log(req.body.status);
 
       // const result = await reqCollection.findOne(filter);
       const result = await reqCollection.updateOne(filter, updateDoc, options);
