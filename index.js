@@ -379,7 +379,10 @@ async function run() {
     // update donation status:
 
     app.patch(`/updateReqStatus`, verify, async (req, res) => {
-      if (req.query.role === "donor") {
+      if (
+        (req.body.status === "pending" || req.body.status === "in progress") &&
+        req.query.role === "donor"
+      ) {
         res.status(403).send("forbidden");
       }
 
