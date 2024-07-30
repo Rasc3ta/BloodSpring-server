@@ -399,6 +399,18 @@ async function run() {
 
       res.send(result);
     });
+
+    // search donor api
+
+    app.post(`/searchDonor`, async (req, res) => {
+      // console.log(req.body.form);
+
+
+
+      const donors = await userCollection.find(req.body.form).toArray();
+
+      res.send(donors);
+    });
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
