@@ -176,7 +176,7 @@ async function run() {
 
     // get a single donation request data :
 
-    app.get("/requests/:id", verify, async (req, res) => {
+    app.get("/requests/:id", async (req, res) => {
       const id = req.params.id;
       // console.log(id);
 
@@ -333,7 +333,7 @@ async function run() {
 
     // all donation request api
 
-    app.get(`/allDonationRequest`, verify, async (req, res) => {
+    app.get(`/allDonationRequest`, async (req, res) => {
       const result = await reqCollection.find().toArray();
       res.send(result);
     });
@@ -404,8 +404,6 @@ async function run() {
 
     app.post(`/searchDonor`, async (req, res) => {
       // console.log(req.body.form);
-
-
 
       const donors = await userCollection.find(req.body.form).toArray();
 
