@@ -338,6 +338,15 @@ async function run() {
       res.send(result);
     });
 
+    // all pending donation request api
+
+    app.get(`/allPendingRequest`, async (req, res) => {
+      const query = { status: "pending" };
+
+      const result = await reqCollection.find(query).toArray();
+      res.send(result);
+    });
+
     // add blog to the database
 
     app.post("/addBlog", verify, async (req, res) => {
@@ -408,6 +417,28 @@ async function run() {
       const donors = await userCollection.find(req.body.form).toArray();
 
       res.send(donors);
+    });
+
+    app.patch("/toInProgress", verify, async (req, res) => {
+      const options = { upsert: false };
+      const filter = { _id: new ObjectId(req.body.id) };
+      const updateDoc = {
+        $set: {
+          status: "in progress",
+          donorEmail: req.body.donorEmail,
+          donorName: req.body.donorName,
+        },
+      };
+
+      console.log({
+        status: "in progress",
+        donorEmail: req.body.donorEmail,
+        donorName: req.body.donorName,
+      });
+
+      const result = await reqCollection.updateOne(filter, updateDoc, options);
+
+      res.send(result);
     });
   } finally {
     // Ensures that the client will close when you finish/error
