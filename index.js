@@ -354,10 +354,30 @@ async function run() {
       res.send(result);
     });
 
+    // get all the blogs (admin)
+
+    app.get(`/getBlogsContentManagement`, verify, async (req, res) => {
+      const result = await blogCollection
+        .find()
+        .toArray();
+      res.send(result);
+    });
+
     // get all the blogs
 
-    app.get(`/getBlogs`, verify, async (req, res) => {
-      const result = await blogCollection.find().toArray();
+    app.get(`/getBlogs`, async (req, res) => {
+      const result = await blogCollection
+        .find({ status: "published" })
+        .toArray();
+      res.send(result);
+    });
+
+    // get a single blog from id:
+
+    app.get("/getBlog/:id", verify, async (req, res) => {
+      // console.log(req.params.id);
+      const query = { _id: new ObjectId(req.params.id) };
+      const result = await blogCollection.findOne(query);
       res.send(result);
     });
 
@@ -440,6 +460,8 @@ async function run() {
 
       res.send(result);
     });
+
+    // get blog data
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
