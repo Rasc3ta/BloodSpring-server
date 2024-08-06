@@ -7,7 +7,7 @@ const jwt = require("jsonwebtoken");
 
 app.use(
   cors({
-    origin: ["http://localhost:5173"],
+    origin: "*",
     credentials: true,
   })
 );
@@ -357,9 +357,7 @@ async function run() {
     // get all the blogs (admin)
 
     app.get(`/getBlogsContentManagement`, verify, async (req, res) => {
-      const result = await blogCollection
-        .find()
-        .toArray();
+      const result = await blogCollection.find().toArray();
       res.send(result);
     });
 
