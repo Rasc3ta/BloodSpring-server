@@ -7,7 +7,7 @@ const jwt = require("jsonwebtoken");
 
 app.use(
   cors({
-    origin: "*",
+    origin: ["https://bloodspring-7db88.web.app", "http://localhost:5173"],
     credentials: true,
   })
 );
@@ -64,10 +64,10 @@ async function run() {
       const token = req.headers.authorization?.split(" ")[1];
       const email = req.query.email;
       // console.log("email : ", email);
-      // console.log("token before verification : ", token);
-      // console.log(req.headers);
+      // console.log("token before verification :  ", token);
+      console.log(req.headers);
 
-      if (token) {
+      if (!!token) {
         jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
           if (!err) {
             console.log("decoded : ", decoded);
@@ -79,16 +79,20 @@ async function run() {
               console.log("email: ", email);
               console.log("decoded email: ", decoded.email);
 
-              console.log("error : ", err);
+              // console.log("error : ", err);
               res.status(403).send("Forbidden");
             }
           } else {
-            console.log("faced error when verifying token, token: ", token);
+            console.log(
+              "faced error when verifying token, token : ",
+              req.headers.authorization
+            );
             res.status(401).send("Unauthorized");
           }
         });
       } else {
-        console.log("didnt get a token ");
+        console.log("didnt get a token , token : ", token);
+
         res.status(401).send("Unauthorized");
       }
     };
