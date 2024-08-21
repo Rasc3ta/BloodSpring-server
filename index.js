@@ -65,7 +65,7 @@ async function run() {
       const email = req.query.email;
       // console.log("email : ", email);
       // console.log("token before verification :  ", token);
-      console.log(req.headers);
+      // console.log(req.headers);
 
       if (!!token) {
         jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
