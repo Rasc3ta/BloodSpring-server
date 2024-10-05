@@ -463,7 +463,12 @@ async function run() {
       res.send(result);
     });
 
-    // get blog data
+    // get all requests
+    app.get("/chartData", async (req, res) => {
+      const options = { projection: { district: 1 } };
+      const cursor = await reqCollection.find({}, options).toArray();
+      res.send(cursor);
+    });
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
