@@ -469,6 +469,15 @@ async function run() {
       const cursor = await reqCollection.find({}, options).toArray();
       res.send(cursor);
     });
+
+    // get all users
+    app.get("/userChartData", async (req, res) => {
+      const options = { projection: { district: 1 } };
+      const cursor = await userCollection.find({}, options).toArray();
+      res.send(cursor);
+    });
+
+
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
